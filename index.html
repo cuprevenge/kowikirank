@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>한국어 위키 순위 - krwikirank</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans leading-normal">
+
+    <header class="bg-slate-800 text-white py-10 shadow-md text-center px-4">
+        <h1 class="text-3xl font-bold mb-2">📊 한국어 위키 현황 랭킹</h1>
+        <p class="text-slate-400 text-base">일반 문서 10,000개 이상 수록 위키 취합</p>
+        <div class="mt-4 text-xs text-slate-500 font-mono">
+            Last Updated: 2026-03-16
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-10 -mt-6">
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-gray-100 text-gray-600 text-sm">
+                        <tr>
+                            <th class="py-4 px-6 font-semibold text-center">순위</th>
+                            <th class="py-4 px-6 font-semibold">위키 명칭</th>
+                            <th class="py-4 px-6 font-semibold text-right">일반 문서</th>
+                            <th class="py-4 px-6 font-semibold text-right text-gray-400">전체 문서</th>
+                            <th class="py-4 px-6 font-semibold text-right text-blue-600">사용자</th>
+                            <th class="py-4 px-6 font-semibold text-center">엔진</th>
+                        </tr>
+                    </thead>
+                    <tbody id="wiki-table-body" class="divide-y divide-gray-100 font-medium text-slate-700">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
+        <section class="mt-8 p-6 bg-white rounded-xl border border-gray-200 text-sm text-slate-600 shadow-sm">
+            <h3 class="font-bold mb-2 text-slate-800"><i class="fas fa-info-circle mr-1"></i> 등재 및 통계 기준</h3>
+            <p class="mb-2">본 랭킹은 <strong>일반 문서 수 10,000개 이상</strong>의 한국어 위키를 대상으로 하며, 각 위키의 통계 페이지 수치를 수동으로 취합합니다.</p>
+            <p class="text-xs text-slate-500 italic">
+                * 나무위키의 경우 통계상 일반 문서에 리다이렉트가 포함되므로, 이를 제외한 실제 문서는 약 120만 개로 추정됩니다.
+            </p>
+            <p class="text-xs text-slate-400 italic mt-1">* 사용자 수 확인이 불가능한 경우 '-'로 표기됩니다.</p>
+        </section>
+    </main>
+
+    <script>
+        const wikiData = [
+            { id: "namu", name: "나무위키", url: "https://namu.wiki", articles: 1803476, total_pages: 8030766, users: 546275, engine: "theseed", note: "*리다이렉트 제외 시 약 120만" },
+            { id: "kowiki", name: "한국어 위키백과", url: "https://ko.wikipedia.org", articles: 740716, total_pages: 3513848, users: 991326, engine: "mediawiki" },
+            { id: "wiktionary", name: "한국어 위키낱말사전", url: "https://ko.wiktionary.org", articles: 301669, total_pages: 474206, users: 35319, engine: "mediawiki" },
+            { id: "zetawiki", name: "제타위키", url: "https://zetawiki.com", articles: 131205, total_pages: 265241, users: 3375, engine: "mediawiki" },
+            { id: "kwiki", name: "K-위키", url: "https://k-wiki.org", articles: 96377, total_pages: 251556, users: 48, engine: "mediawiki" },
+            { id: "librewiki", name: "리브레 위키", url: "https://librewiki.net", articles: 60680, total_pages: 181004, users: 9041, engine: "mediawiki" },
+            { id: "coinwiki", name: "코인위키", url: "https://wiki1.kr/", articles: 51537, total_pages: 284353, users: 1045, engine: "mediawiki" },
+            { id: "alphawiki", name: "알파위키", url: "https://alphawiki.org", articles: 39513, total_pages: 621532, users: 3311, engine: "theseed" },
+            { id: "stonewiki", name: "스톤위키", url: "https://www.stonecry.org/", articles: 37392, total_pages: 71327, users: 3, engine: "mediawiki" },
+            { id: "wikisource", name: "한국어 위키문헌", url: "https://ko.wikisource.org/", articles: 25422, total_pages: 92892, users: 19132, engine: "mediawiki" },
+            { id: "jwiki", name: "제이위키", url: "https://jwiki.kr", articles: 23259, total_pages: 101188, users: 2418, engine: "mediawiki" },
+            { id: "femiwiki", name: "페미위키", url: "https://femiwiki.com/", articles: 22064, total_pages: 75349, users: 6383, engine: "mediawiki" },
+            { id: "unamwiki", name: "우남위키", url: "https://www.unamwiki.org/", articles: 21412, total_pages: 43143, users: 573, engine: "mediawiki" },
+            { id: "libertygame", name: "리버티게임", url: "https://libertyga.me/", articles: 19719, total_pages: 37129, users: 156, engine: "mediawiki" },
+            { id: "seedwiki", name: "시드위키", url: "https://seedwiki.website/", articles: 16663, total_pages: 17359, users: 115, engine: "opennamu" },
+            { id: "pokemon", name: "포켓몬 위키", url: "https://pokemon.fandom.com/ko/", articles: 15666, total_pages: 89569, users: 0, engine: "mediawiki" },
+            { id: "openwiki", name: "오픈위키", url: "https://openwiki.kr/", articles: 13265, total_pages: 32832, users: 0, engine: "dokuwiki" },
+            { id: "uncyclopedia", name: "백괴사전", url: "https://www.uncyclopedia.kr/", articles: 12415, total_pages: 49195, users: 606, engine: "mediawiki" }
+        ];
+
+        wikiData.sort((a, b) => b.articles - a.articles);
+
+        const tableBody = document.getElementById('wiki-table-body');
+        
+        wikiData.forEach((wiki, index) => {
+            const engineStyles = {
+                'mediawiki': 'bg-blue-100 text-blue-700',
+                'theseed': 'bg-green-100 text-green-700',
+                'opennamu': 'bg-orange-100 text-orange-700',
+                'dokuwiki': 'bg-gray-100 text-gray-700'
+            };
+            const currentStyle = engineStyles[wiki.engine] || 'bg-slate-100 text-slate-600';
+            const rankLabel = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1;
+            const userText = wiki.users === 0 ? '<span class="text-slate-200">-</span>' : wiki.users.toLocaleString();
+
+            const row = `
+                <tr class="hover:bg-slate-50 transition-colors border-b border-gray-50 last:border-0">
+                    <td class="py-4 px-6 text-center ${index < 3 ? 'text-xl' : 'text-gray-400 font-mono text-sm'}">${rankLabel}</td>
+                    <td class="py-4 px-6">
+                        <div class="font-bold text-slate-900">${wiki.name}</div>
+                        <a href="${wiki.url}" target="_blank" class="text-[10px] text-blue-400 hover:text-blue-600 font-mono uppercase">${wiki.url.split('//')[1].replace('www.', '').split('/')[0]}</a>
+                    </td>
+                    <td class="py-4 px-6 text-right">
+                        <div class="font-bold text-slate-800">${wiki.articles.toLocaleString()}</div>
+                        ${wiki.note ? `<div class="text-[9px] text-red-400 font-normal">${wiki.note}</div>` : ''}
+                    </td>
+                    <td class="py-4 px-6 text-right text-gray-400 text-xs">${wiki.total_pages.toLocaleString()}</td>
+                    <td class="py-4 px-6 text-right font-bold text-blue-600">${userText}</td>
+                    <td class="py-4 px-6 text-center">
+                        <span class="text-[9px] px-2 py-1 rounded font-black uppercase tracking-tight ${currentStyle}">${wiki.engine}</span>
+                    </td>
+                </tr>
+            `;
+            tableBody.insertAdjacentHTML('beforeend', row);
+        });
+    </script>
+</body>
+</html>
