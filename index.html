@@ -12,9 +12,9 @@
     <header class="bg-slate-800 text-white py-10 shadow-md text-center px-4">
         <h1 class="text-3xl font-bold mb-2">📊 한국어 위키 현황 랭킹</h1>
         <p class="text-slate-400 text-base">일반 문서 10,000개 이상 수록 위키 취합</p>
-        <div class="mt-4 text-xs text-slate-500 font-mono">
-            Last Updated: 2026-03-16
-        </div>
+        
+        <div id="date-selector" class="mt-6 flex justify-center gap-2">
+            </div>
     </header>
 
     <main class="container mx-auto px-4 py-10 -mt-6">
@@ -32,78 +32,154 @@
                         </tr>
                     </thead>
                     <tbody id="wiki-table-body" class="divide-y divide-gray-100 font-medium text-slate-700">
-                        </tbody>
+                    </tbody>
                 </table>
             </div>
         </div>
 
         <section class="mt-8 p-6 bg-white rounded-xl border border-gray-200 text-sm text-slate-600 shadow-sm">
             <h3 class="font-bold mb-2 text-slate-800"><i class="fas fa-info-circle mr-1"></i> 등재 및 통계 기준</h3>
-            <p class="mb-2">본 랭킹은 <strong>일반 문서 수 10,000개 이상</strong>의 한국어 위키를 대상으로 하며, 각 위키의 통계 페이지 수치를 수동으로 취합합니다.</p>
-            <p class="text-xs text-slate-500 italic">
-                * 나무위키의 경우 통계상 일반 문서에 리다이렉트가 포함되므로, 이를 제외한 실제 문서는 약 120만 개로 추정됩니다.
-            </p>
-            <p class="text-xs text-slate-400 italic mt-1">* 사용자 수 확인이 불가능한 경우 '-'로 표기됩니다.</p>
+            <ul class="list-disc ml-5 space-y-1 mb-4">
+                <li>본 랭킹은 <strong>일반 문서 수 10,000개 이상</strong>의 한국어 위키를 대상으로 합니다.</li>
+                <li id="stone-notice" class="hidden font-medium text-slate-500">
+                    <strong>스톤위키:</strong> Next.js 엔진 전환으로 인해 2026년 4월부터 문서 및 사용자 수 확인이 불가하여 순위에서 제외되었습니다.
+                </li>
+            </ul>
+            <p id="update-date-info" class="text-xs text-slate-500 italic font-mono"></p>
         </section>
     </main>
 
     <script>
-        const wikiData = [
-            { id: "namu", name: "나무위키", url: "https://namu.wiki", articles: 1803476, total_pages: 8030766, users: 546275, engine: "theseed", note: "*리다이렉트 제외 시 약 120만" },
-            { id: "kowiki", name: "한국어 위키백과", url: "https://ko.wikipedia.org", articles: 740716, total_pages: 3513848, users: 991326, engine: "mediawiki" },
-            { id: "wiktionary", name: "한국어 위키낱말사전", url: "https://ko.wiktionary.org", articles: 301669, total_pages: 474206, users: 35319, engine: "mediawiki" },
-            { id: "zetawiki", name: "제타위키", url: "https://zetawiki.com", articles: 131205, total_pages: 265241, users: 3375, engine: "mediawiki" },
-            { id: "kwiki", name: "K-위키", url: "https://k-wiki.org", articles: 96377, total_pages: 251556, users: 48, engine: "mediawiki" },
-            { id: "librewiki", name: "리브레 위키", url: "https://librewiki.net", articles: 60680, total_pages: 181004, users: 9041, engine: "mediawiki" },
-            { id: "coinwiki", name: "코인위키", url: "https://wiki1.kr/", articles: 51537, total_pages: 284353, users: 1045, engine: "mediawiki" },
-            { id: "alphawiki", name: "알파위키", url: "https://alphawiki.org", articles: 39513, total_pages: 621532, users: 3311, engine: "theseed" },
-            { id: "stonewiki", name: "스톤위키", url: "https://www.stonecry.org/", articles: 37392, total_pages: 71327, users: 3, engine: "mediawiki" },
-            { id: "wikisource", name: "한국어 위키문헌", url: "https://ko.wikisource.org/", articles: 25422, total_pages: 92892, users: 19132, engine: "mediawiki" },
-            { id: "jwiki", name: "제이위키", url: "https://jwiki.kr", articles: 23259, total_pages: 101188, users: 2418, engine: "mediawiki" },
-            { id: "femiwiki", name: "페미위키", url: "https://femiwiki.com/", articles: 22064, total_pages: 75349, users: 6383, engine: "mediawiki" },
-            { id: "unamwiki", name: "우남위키", url: "https://www.unamwiki.org/", articles: 21412, total_pages: 43143, users: 573, engine: "mediawiki" },
-            { id: "libertygame", name: "리버티게임", url: "https://libertyga.me/", articles: 19719, total_pages: 37129, users: 156, engine: "mediawiki" },
-            { id: "seedwiki", name: "시드위키", url: "https://seedwiki.website/", articles: 16663, total_pages: 17359, users: 115, engine: "opennamu" },
-            { id: "pokemon", name: "포켓몬 위키", url: "https://pokemon.fandom.com/ko/", articles: 15666, total_pages: 89569, users: 0, engine: "mediawiki" },
-            { id: "openwiki", name: "오픈위키", url: "https://openwiki.kr/", articles: 13265, total_pages: 32832, users: 0, engine: "dokuwiki" },
-            { id: "uncyclopedia", name: "백괴사전", url: "https://www.uncyclopedia.kr/", articles: 12415, total_pages: 49195, users: 606, engine: "mediawiki" }
-        ];
+        const wikiHistory = {
+            "2026-04-23": [
+                { id: "namu", name: "나무위키", url: "https://namu.wiki", articles: 1822842, total_pages: 8133749, users: 551413, engine: "theseed", note: "*리다이렉트 제외 시 약 120만" },
+                { id: "kowiki", name: "한국어 위키백과", url: "https://ko.wikipedia.org", articles: 743840, total_pages: 3525836, users: 1004241, engine: "mediawiki" },
+                { id: "wiktionary", name: "한국어 위키낱말사전", url: "https://ko.wiktionary.org", articles: 301821, total_pages: 474333, users: 35519, engine: "mediawiki" },
+                { id: "zetawiki", name: "제타위키", url: "https://zetawiki.com", articles: 131419, total_pages: 265654, users: 3393, engine: "mediawiki" },
+                { id: "kwiki", name: "K-위키", url: "https://www.k-wiki.kr/", articles: 96719, total_pages: 252465, users: 60, engine: "mediawiki" },
+                { id: "librewiki", name: "리브레 위키", url: "https://librewiki.net", articles: 60718, total_pages: 181141, users: 9056, engine: "mediawiki" },
+                { id: "coinwiki", name: "코인위키", url: "https://wiki1.kr/", articles: 52252, total_pages: 288534, users: 1048, engine: "mediawiki" },
+                { id: "alphawiki", name: "알파위키", url: "https://alphawiki.org", articles: 42233, total_pages: 626516, users: 3362, engine: "theseed" },
+                { id: "wikisource", name: "한국어 위키문헌", url: "https://ko.wikisource.org/", articles: 25507, total_pages: 92860, users: 19226, engine: "mediawiki" },
+                { id: "jwiki", name: "제이위키", url: "https://jwiki.kr", articles: 23633, total_pages: 943924, users: 2447, engine: "mediawiki" },
+                { id: "femiwiki", name: "페미위키", url: "https://femiwiki.com/", articles: 22081, total_pages: 75381, users: 6399, engine: "mediawiki" },
+                { id: "unamwiki", name: "우남위키", url: "https://www.unamwiki.org/", articles: 21546, total_pages: 43400, users: 578, engine: "mediawiki" },
+                { id: "libertygame", name: "리버티게임", url: "https://libertygame.work/", articles: 19723, total_pages: 37151, users: 160, engine: "mediawiki" },
+                { id: "seedwiki", name: "시드위키", url: "https://seedwiki.website/", articles: 16830, total_pages: 17526, users: 115, engine: "opennamu" },
+                { id: "pokemon", name: "포켓몬 위키", url: "https://pokemon.fandom.com/ko/", articles: 15748, total_pages: 89998, users: 0, engine: "mediawiki" },
+                { id: "openwiki", name: "오픈위키", url: "https://openwiki.kr/", articles: 13265, total_pages: 32922, users: 0, engine: "dokuwiki" },
+                { id: "uncyclopedia", name: "백괴사전", url: "https://www.uncyclopedia.kr/", articles: 12444, total_pages: 49279, users: 617, engine: "mediawiki" }
+            ],
+            "2026-03-16": [
+                { id: "namu", name: "나무위키", url: "https://namu.wiki", articles: 1803476, total_pages: 8030766, users: 546275, engine: "theseed", note: "*리다이렉트 제외 시 약 120만" },
+                { id: "kowiki", name: "한국어 위키백과", url: "https://ko.wikipedia.org", articles: 740716, total_pages: 3513848, users: 991326, engine: "mediawiki" },
+                { id: "wiktionary", name: "한국어 위키낱말사전", url: "https://ko.wiktionary.org", articles: 301669, total_pages: 474206, users: 35319, engine: "mediawiki" },
+                { id: "zetawiki", name: "제타위키", url: "https://zetawiki.com", articles: 131205, total_pages: 265241, users: 3375, engine: "mediawiki" },
+                { id: "kwiki", name: "K-위키", url: "https://k-wiki.org", articles: 96377, total_pages: 251556, users: 48, engine: "mediawiki" },
+                { id: "librewiki", name: "리브레 위키", url: "https://librewiki.net", articles: 60680, total_pages: 181004, users: 9041, engine: "mediawiki" },
+                { id: "coinwiki", name: "코인위키", url: "https://wiki1.kr/", articles: 51537, total_pages: 284353, users: 1045, engine: "mediawiki" },
+                { id: "alphawiki", name: "알파위키", url: "https://alphawiki.org", articles: 39513, total_pages: 621532, users: 3311, engine: "theseed" },
+                { id: "stonewiki", name: "스톤위키", url: "https://www.stonecry.org/", articles: 37392, total_pages: 71327, users: 3, engine: "mediawiki" },
+                { id: "wikisource", name: "한국어 위키문헌", url: "https://ko.wikisource.org/", articles: 25422, total_pages: 92892, users: 19132, engine: "mediawiki" },
+                { id: "jwiki", name: "제이위키", url: "https://jwiki.kr", articles: 23259, total_pages: 101188, users: 2418, engine: "mediawiki" },
+                { id: "femiwiki", name: "페미위키", url: "https://femiwiki.com/", articles: 22064, total_pages: 75349, users: 6383, engine: "mediawiki" },
+                { id: "unamwiki", name: "우남위키", url: "https://www.unamwiki.org/", articles: 21412, total_pages: 43143, users: 573, engine: "mediawiki" },
+                { id: "libertygame", name: "리버티게임", url: "https://libertyga.me/", articles: 19719, total_pages: 37129, users: 156, engine: "mediawiki" },
+                { id: "seedwiki", name: "시드위키", url: "https://seedwiki.website/", articles: 16663, total_pages: 17359, users: 115, engine: "opennamu" },
+                { id: "pokemon", name: "포켓몬 위키", url: "https://pokemon.fandom.com/ko/", articles: 15666, total_pages: 89569, users: 0, engine: "mediawiki" },
+                { id: "openwiki", name: "오픈위키", url: "https://openwiki.kr/", articles: 13265, total_pages: 32832, users: 0, engine: "dokuwiki" },
+                { id: "uncyclopedia", name: "백괴사전", url: "https://www.uncyclopedia.kr/", articles: 12415, total_pages: 49195, users: 606, engine: "mediawiki" }
+            ]
+        };
 
-        wikiData.sort((a, b) => b.articles - a.articles);
+        const sortedFullDates = Object.keys(wikiHistory).sort().reverse();
+        let currentSelectedDate = sortedFullDates[0];
 
-        const tableBody = document.getElementById('wiki-table-body');
-        
-        wikiData.forEach((wiki, index) => {
-            const engineStyles = {
-                'mediawiki': 'bg-blue-100 text-blue-700',
-                'theseed': 'bg-green-100 text-green-700',
-                'opennamu': 'bg-orange-100 text-orange-700',
-                'dokuwiki': 'bg-gray-100 text-gray-700'
-            };
-            const currentStyle = engineStyles[wiki.engine] || 'bg-slate-100 text-slate-600';
-            const rankLabel = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1;
-            const userText = wiki.users === 0 ? '<span class="text-slate-200">-</span>' : wiki.users.toLocaleString();
+        function getDiffHtml(current, previous) {
+            if (previous === undefined) return '';
+            const diff = current - previous;
+            if (diff > 0) return `<span class="text-[10px] text-red-500 ml-1 font-normal"><i class="fas fa-caret-up"></i> ${diff.toLocaleString()}</span>`;
+            if (diff < 0) return `<span class="text-[10px] text-blue-500 ml-1 font-normal"><i class="fas fa-caret-down"></i> ${Math.abs(diff).toLocaleString()}</span>`;
+            return `<span class="text-[10px] text-slate-300 ml-1 font-normal">-</span>`;
+        }
 
-            const row = `
-                <tr class="hover:bg-slate-50 transition-colors border-b border-gray-50 last:border-0">
-                    <td class="py-4 px-6 text-center ${index < 3 ? 'text-xl' : 'text-gray-400 font-mono text-sm'}">${rankLabel}</td>
-                    <td class="py-4 px-6">
-                        <div class="font-bold text-slate-900">${wiki.name}</div>
-                        <a href="${wiki.url}" target="_blank" class="text-[10px] text-blue-400 hover:text-blue-600 font-mono uppercase">${wiki.url.split('//')[1].replace('www.', '').split('/')[0]}</a>
-                    </td>
-                    <td class="py-4 px-6 text-right">
-                        <div class="font-bold text-slate-800">${wiki.articles.toLocaleString()}</div>
-                        ${wiki.note ? `<div class="text-[9px] text-red-400 font-normal">${wiki.note}</div>` : ''}
-                    </td>
-                    <td class="py-4 px-6 text-right text-gray-400 text-xs">${wiki.total_pages.toLocaleString()}</td>
-                    <td class="py-4 px-6 text-right font-bold text-blue-600">${userText}</td>
-                    <td class="py-4 px-6 text-center">
-                        <span class="text-[9px] px-2 py-1 rounded font-black uppercase tracking-tight ${currentStyle}">${wiki.engine}</span>
-                    </td>
-                </tr>
-            `;
-            tableBody.insertAdjacentHTML('beforeend', row);
-        });
+        function renderTable(dateKey) {
+            const tableBody = document.getElementById('wiki-table-body');
+            const infoText = document.getElementById('update-date-info');
+            const stoneNotice = document.getElementById('stone-notice');
+            
+            tableBody.innerHTML = '';
+            
+            if(dateKey === "2026-04-23") {
+                stoneNotice.classList.remove('hidden');
+            } else {
+                stoneNotice.classList.add('hidden');
+            }
+
+            const currentData = [...wikiHistory[dateKey]].sort((a, b) => b.articles - a.articles);
+            const prevDateKey = sortedFullDates[sortedFullDates.indexOf(dateKey) + 1];
+            const prevData = prevDateKey ? wikiHistory[prevDateKey] : null;
+
+            infoText.innerText = `Update: ${dateKey} ${prevDateKey ? '(기준점: ' + prevDateKey + ')' : ''}`;
+
+            currentData.forEach((wiki, index) => {
+                const prevWiki = prevData ? prevData.find(p => p.id === wiki.id) : null;
+                const engineStyles = { 'mediawiki': 'bg-blue-100 text-blue-700', 'theseed': 'bg-green-100 text-green-700', 'opennamu': 'bg-orange-100 text-orange-700', 'dokuwiki': 'bg-gray-100 text-gray-700' };
+                const rankLabel = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1;
+                
+                let userDisplay = wiki.users === 0 ? '<span class="text-slate-200">-</span>' : 
+                    `<div class="flex items-baseline justify-end"><span class="font-bold text-blue-600">${wiki.users.toLocaleString()}</span>${getDiffHtml(wiki.users, prevWiki?.users)}</div>`;
+
+                const row = `
+                    <tr class="hover:bg-slate-50 transition-colors border-b border-gray-50 last:border-0">
+                        <td class="py-4 px-6 text-center ${index < 3 ? 'text-xl' : 'text-gray-400 font-mono text-sm'}">${rankLabel}</td>
+                        <td class="py-4 px-6">
+                            <div class="font-bold text-slate-900">${wiki.name}</div>
+                            <div class="text-[10px] text-blue-400 font-mono uppercase">${wiki.url.split('//')[1].replace('www.', '').split('/')[0]}</div>
+                        </td>
+                        <td class="py-4 px-6 text-right">
+                            <div class="flex items-baseline justify-end">
+                                <span class="font-bold text-slate-800">${wiki.articles.toLocaleString()}</span>
+                                ${getDiffHtml(wiki.articles, prevWiki?.articles)}
+                            </div>
+                            ${wiki.note ? `<div class="text-[9px] text-red-400 font-normal mt-0.5">${wiki.note}</div>` : ''}
+                        </td>
+                        <td class="py-4 px-6 text-right text-gray-400 text-xs">
+                            <div class="flex items-baseline justify-end">
+                                <span>${wiki.total_pages.toLocaleString()}</span>
+                                ${getDiffHtml(wiki.total_pages, prevWiki?.total_pages)}
+                            </div>
+                        </td>
+                        <td class="py-4 px-6 text-right">${userDisplay}</td>
+                        <td class="py-4 px-6 text-center">
+                            <span class="text-[9px] px-2 py-1 rounded font-black uppercase tracking-tight ${engineStyles[wiki.engine] || 'bg-slate-100 text-slate-600'}">${wiki.engine}</span>
+                        </td>
+                    </tr>`;
+                tableBody.insertAdjacentHTML('beforeend', row);
+            });
+        }
+
+        function createButtons() {
+            const container = document.getElementById('date-selector');
+            container.innerHTML = '';
+            sortedFullDates.forEach(fullDate => {
+                const btn = document.createElement('button');
+                const isActive = fullDate === currentSelectedDate;
+                const monthLabel = parseInt(fullDate.split('-')[1]) + '월';
+                
+                btn.className = `px-6 py-1.5 rounded-full text-sm font-bold transition-all ${isActive ? 'bg-white text-slate-800 shadow-md scale-105' : 'bg-slate-700 text-slate-400 hover:bg-slate-600'}`;
+                btn.innerText = monthLabel;
+                btn.onclick = () => {
+                    currentSelectedDate = fullDate;
+                    createButtons();
+                    renderTable(fullDate);
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        createButtons();
+        renderTable(currentSelectedDate);
     </script>
 </body>
 </html>
